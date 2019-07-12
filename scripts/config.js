@@ -5,6 +5,7 @@ const cjs = require('rollup-plugin-commonjs')
 const replace = require('rollup-plugin-replace')
 const node = require('rollup-plugin-node-resolve')
 const flow = require('rollup-plugin-flow-no-whitespace')
+const server = require('rollup-plugin-serve')
 const version = process.env.VERSION || require('../package.json').version
 const weexVersion = process.env.WEEX_VERSION || require('../packages/weex-vue-framework/package.json').version
 const featureFlags = require('./feature-flags')
@@ -17,10 +18,10 @@ const banner =
   ' */'
 
 const weexFactoryPlugin = {
-  intro () {
+  intro() {
     return 'module.exports = function weexFactory (exports, document) {'
   },
-  outro () {
+  outro() {
     return '}'
   }
 }
@@ -57,7 +58,9 @@ const builds = {
     dest: resolve('dist/vue.common.dev.js'),
     format: 'cjs',
     env: 'development',
-    alias: { he: './entity-decoder' },
+    alias: {
+      he: './entity-decoder'
+    },
     banner
   },
   'web-full-cjs-prod': {
@@ -65,7 +68,9 @@ const builds = {
     dest: resolve('dist/vue.common.prod.js'),
     format: 'cjs',
     env: 'production',
-    alias: { he: './entity-decoder' },
+    alias: {
+      he: './entity-decoder'
+    },
     banner
   },
   // Runtime only ES modules build (for bundlers)
@@ -80,7 +85,9 @@ const builds = {
     entry: resolve('web/entry-runtime-with-compiler.js'),
     dest: resolve('dist/vue.esm.js'),
     format: 'es',
-    alias: { he: './entity-decoder' },
+    alias: {
+      he: './entity-decoder'
+    },
     banner
   },
   // Runtime+compiler ES modules build (for direct import in browser)
@@ -90,7 +97,9 @@ const builds = {
     format: 'es',
     transpile: false,
     env: 'development',
-    alias: { he: './entity-decoder' },
+    alias: {
+      he: './entity-decoder'
+    },
     banner
   },
   // Runtime+compiler ES modules build (for direct import in browser)
@@ -100,7 +109,9 @@ const builds = {
     format: 'es',
     transpile: false,
     env: 'production',
-    alias: { he: './entity-decoder' },
+    alias: {
+      he: './entity-decoder'
+    },
     banner
   },
   // runtime-only build (Browser)
@@ -124,8 +135,17 @@ const builds = {
     entry: resolve('web/entry-runtime-with-compiler.js'),
     dest: resolve('dist/vue.js'),
     format: 'umd',
+    sourcemap: true,
+    plugins: [
+      server({
+        port: 3000,
+        contentBase: [resolve('examples'), resolve('dist')]
+      }),
+    ],
     env: 'development',
-    alias: { he: './entity-decoder' },
+    alias: {
+      he: './entity-decoder'
+    },
     banner
   },
   // Runtime+compiler production build  (Browser)
@@ -134,7 +154,9 @@ const builds = {
     dest: resolve('dist/vue.min.js'),
     format: 'umd',
     env: 'production',
-    alias: { he: './entity-decoder' },
+    alias: {
+      he: './entity-decoder'
+    },
     banner
   },
   // Web compiler (CommonJS).
@@ -213,7 +235,7 @@ const builds = {
   }
 }
 
-function genConfig (name) {
+function genConfig(name) {
   const opts = builds[name]
   const config = {
     input: opts.entry,
@@ -224,6 +246,7 @@ function genConfig (name) {
     ].concat(opts.plugins || []),
     output: {
       file: opts.dest,
+      sourcemap: opts.sourcemap,
       format: opts.format,
       banner: opts.banner,
       name: opts.moduleName || 'Vue'
