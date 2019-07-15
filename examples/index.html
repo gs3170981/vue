@@ -20,7 +20,11 @@
     data: {
       message: 'Hello Vue!'
     },
+    beforeCreate() {
+      console.log(this)
+    },
     created() {
+      console.log(this)
       this.asd()
     },
     mounted() {
