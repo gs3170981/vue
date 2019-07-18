@@ -8,15 +8,27 @@ import {
   defineReactive
 } from '../util/index'
 
-import { createElement } from '../vdom/create-element'
-import { installRenderHelpers } from './render-helpers/index'
-import { resolveSlots } from './render-helpers/resolve-slots'
-import { normalizeScopedSlots } from '../vdom/helpers/normalize-scoped-slots'
-import VNode, { createEmptyVNode } from '../vdom/vnode'
+import {
+  createElement
+} from '../vdom/create-element'
+import {
+  installRenderHelpers
+} from './render-helpers/index'
+import {
+  resolveSlots
+} from './render-helpers/resolve-slots'
+import {
+  normalizeScopedSlots
+} from '../vdom/helpers/normalize-scoped-slots'
+import VNode, {
+  createEmptyVNode
+} from '../vdom/vnode'
 
-import { isUpdatingChildComponent } from './lifecycle'
+import {
+  isUpdatingChildComponent
+} from './lifecycle'
 
-export function initRender (vm: Component) {
+export function initRender(vm: Component) {
   vm._vnode = null // the root of the child tree
   vm._staticTrees = null // v-once cached trees
   const options = vm.$options
@@ -54,11 +66,11 @@ export function initRender (vm: Component) {
 export let currentRenderingInstance: Component | null = null
 
 // for testing only
-export function setCurrentRenderingInstance (vm: Component) {
+export function setCurrentRenderingInstance(vm: Component) {
   currentRenderingInstance = vm
 }
 
-export function renderMixin (Vue: Class<Component>) {
+export function renderMixin(Vue: Class<Component> ) {
   // install runtime convenience helpers
   installRenderHelpers(Vue.prototype)
 
@@ -68,7 +80,10 @@ export function renderMixin (Vue: Class<Component>) {
 
   Vue.prototype._render = function (): VNode {
     const vm: Component = this
-    const { render, _parentVnode } = vm.$options
+    const {
+      render,
+      _parentVnode
+    } = vm.$options
 
     if (_parentVnode) {
       vm.$scopedSlots = normalizeScopedSlots(

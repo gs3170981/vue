@@ -10,7 +10,8 @@
 
 <body>
   <div id="app">
-    {{ message }}
+    <p v-text="message"></p>
+    <p v-for="item in arr" v-text="item.k"></p>
   </div>
 </body>
 <script src="./vue.js"></script>
@@ -18,7 +19,17 @@
   var app = new Vue({
     el: '#app',
     data: {
-      message: 'Hello Vue!'
+      message: 'Hello Vue!',
+      arr: [{
+          k: 1
+        },
+        {
+          k: 2
+        },
+        {
+          k: 3
+        }
+      ]
     },
     beforeCreate() {
       console.log(this)
@@ -29,6 +40,7 @@
     },
     mounted() {
       this.asd1()
+      this.arr[0].k = 9
     },
     methods: {
       asd() {

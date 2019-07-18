@@ -1,14 +1,32 @@
 /* @flow */
 
-import { escape } from 'web/server/util'
-import { SSR_ATTR } from 'shared/constants'
-import { RenderContext } from './render-context'
-import { resolveAsset } from 'core/util/options'
-import { generateComponentTrace } from 'core/util/debug'
-import { ssrCompileToFunctions } from 'web/server/compiler'
-import { installSSRHelpers } from './optimizing-compiler/runtime-helpers'
+import {
+  escape
+} from 'web/server/util'
+import {
+  SSR_ATTR
+} from 'shared/constants'
+import {
+  RenderContext
+} from './render-context'
+import {
+  resolveAsset
+} from 'core/util/options'
+import {
+  generateComponentTrace
+} from 'core/util/debug'
+import {
+  ssrCompileToFunctions
+} from 'web/server/compiler'
+import {
+  installSSRHelpers
+} from './optimizing-compiler/runtime-helpers'
 
-import { isDef, isUndef, isTrue } from 'shared/util'
+import {
+  isDef,
+  isUndef,
+  isTrue
+} from 'shared/util'
 
 import {
   createComponent,
@@ -30,7 +48,11 @@ const onCompilationError = (err, vm) => {
 }
 
 const normalizeRender = vm => {
-  const { render, template, _scopeId } = vm.$options
+  const {
+    render,
+    template,
+    _scopeId
+  } = vm.$options
   if (isUndef(render)) {
     if (template) {
       const compiled = ssrCompileToFunctions(template, {
@@ -50,7 +72,7 @@ const normalizeRender = vm => {
   }
 }
 
-function waitForServerPrefetch (vm, resolve, reject) {
+function waitForServerPrefetch(vm, resolve, reject) {
   let handlers = vm.$options.serverPrefetch
   if (isDef(handlers)) {
     if (!Array.isArray(handlers)) handlers = [handlers]
@@ -71,7 +93,7 @@ function waitForServerPrefetch (vm, resolve, reject) {
   resolve()
 }
 
-function renderNode (node, isRoot, context) {
+function renderNode(node, isRoot, context) {
   if (node.isString) {
     renderStringNode(node, context)
   } else if (isDef(node.componentOptions)) {
@@ -93,7 +115,7 @@ function renderNode (node, isRoot, context) {
   }
 }
 
-function registerComponentForCache (options, write) {
+function registerComponentForCache(options, write) {
   // exposed by vue-loader, need to call this if cache hit because
   // component lifecycle hooks will not be called.
   const register = options._ssrRegister
@@ -103,8 +125,12 @@ function registerComponentForCache (options, write) {
   return register
 }
 
-function renderComponent (node, isRoot, context) {
-  const { write, next, userContext } = context
+function renderComponent(node, isRoot, context) {
+  const {
+    write,
+    next,
+    userContext
+  } = context
 
   // check cache hit
   const Ctor = node.componentOptions.Ctor
@@ -120,7 +146,10 @@ function renderComponent (node, isRoot, context) {
       return
     }
     const key = name + '::' + rawKey
-    const { has, get } = context
+    const {
+      has,
+      get
+    } = context
     if (isDef(has)) {
       has(key, hit => {
         if (hit === true && isDef(get)) {
@@ -167,7 +196,7 @@ function renderComponent (node, isRoot, context) {
   }
 }
 
-function renderComponentWithCache (node, isRoot, key, context) {
+function renderComponentWithCache(node, isRoot, key, context) {
   const write = context.write
   write.caching = true
   const buffer = write.cacheBuffer
@@ -184,7 +213,7 @@ function renderComponentWithCache (node, isRoot, key, context) {
   renderComponentInner(node, isRoot, context)
 }
 
-function renderComponentInner (node, isRoot, context) {
+function renderComponentInner(node, isRoot, context) {
   const prevActive = context.activeInstance
   // expose userContext on vnode
   node.ssrContext = context.userContext
@@ -209,14 +238,18 @@ function renderComponentInner (node, isRoot, context) {
   waitForServerPrefetch(child, resolve, reject)
 }
 
-function renderAsyncComponent (node, isRoot, context) {
+function renderAsyncComponent(node, isRoot, context) {
   const factory = node.asyncFactory
 
   const resolve = comp => {
     if (comp.__esModule && comp.default) {
       comp = comp.default
     }
-    const { data, children, tag } = node.asyncMeta
+    const {
+      data,
+      children,
+      tag
+    } = node.asyncMeta
     const nodeContext = node.asyncMeta.context
     const resolvedNode: any = createComponent(
       comp,
@@ -274,8 +307,11 @@ function renderAsyncComponent (node, isRoot, context) {
   }
 }
 
-function renderStringNode (el, context) {
-  const { write, next } = context
+function renderStringNode(el, context) {
+  const {
+    write,
+    next
+  } = context
   if (isUndef(el.children) || el.children.length === 0) {
     write(el.open + (el.close || ''), next)
   } else {
@@ -291,8 +327,11 @@ function renderStringNode (el, context) {
   }
 }
 
-function renderElement (el, isRoot, context) {
-  const { write, next } = context
+function renderElement(el, isRoot, context) {
+  const {
+    write,
+    next
+  } = context
 
   if (isTrue(isRoot)) {
     if (!el.data) el.data = {}
@@ -323,12 +362,12 @@ function renderElement (el, isRoot, context) {
   }
 }
 
-function hasAncestorData (node: VNode) {
+function hasAncestorData(node: VNode) {
   const parentNode = node.parent
   return isDef(parentNode) && (isDef(parentNode.data) || hasAncestorData(parentNode))
 }
 
-function getVShowDirectiveInfo (node: VNode): ?VNodeDirective {
+function getVShowDirectiveInfo(node: VNode): ? VNodeDirective {
   let dir: VNodeDirective
   let tmp
 
@@ -344,9 +383,12 @@ function getVShowDirectiveInfo (node: VNode): ?VNodeDirective {
   return dir
 }
 
-function renderStartingTag (node: VNode, context) {
+function renderStartingTag(node: VNode, context) {
   let markup = `<${node.tag}`
-  const { directives, modules } = context
+  const {
+    directives,
+    modules
+  } = context
 
   // construct synthetic data for module processing
   // because modules like style also produce code by parent VNode data
@@ -406,24 +448,28 @@ function renderStartingTag (node: VNode, context) {
   return markup + '>'
 }
 
-export function createRenderFunction (
-  modules: Array<(node: VNode) => ?string>,
+export function createRenderFunction(
+  modules: Array<(node: VNode) => ? string> ,
   directives: Object,
   isUnaryTag: Function,
   cache: any
 ) {
-  return function render (
+  return function render(
     component: Component,
     write: (text: string, next: Function) => void,
-    userContext: ?Object,
+    userContext: ? Object,
     done: Function
   ) {
     warned = Object.create(null)
     const context = new RenderContext({
       activeInstance: component,
       userContext,
-      write, done, renderNode,
-      isUnaryTag, modules, directives,
+      write,
+      done,
+      renderNode,
+      isUnaryTag,
+      modules,
+      directives,
       cache
     })
     installSSRHelpers(component)
